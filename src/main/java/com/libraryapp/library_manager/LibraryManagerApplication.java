@@ -1,6 +1,8 @@
 package com.libraryapp.library_manager;
 
 import com.libraryapp.model.User;
+import com.libraryapp.model.Book;
+import com.libraryapp.repository.BookRepository;
 import com.libraryapp.repository.UserRepository;
 import com.libraryapp.util.FileStorageProperties;
 import org.springframework.boot.CommandLineRunner;
@@ -13,7 +15,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
-@SpringBootApplication(scanBasePackages = "com.libraryapp")  // 🔹 scan ALL app packages
+@SpringBootApplication(scanBasePackages = "com.libraryapp")   // 🔹 important!
 @EnableConfigurationProperties({FileStorageProperties.class})
 @EnableJpaRepositories(basePackages = "com.libraryapp.repository")
 @EntityScan(basePackages = "com.libraryapp.model")
@@ -23,20 +25,20 @@ public class LibraryManagerApplication {
         SpringApplication.run(LibraryManagerApplication.class, args);
     }
 
+    // Create default users
     @Bean
     public CommandLineRunner initUsers(UserRepository userRepository,
                                        PasswordEncoder passwordEncoder) {
         return args -> {
-
             if (userRepository.findByUsername("testuser").isEmpty()) {
                 User u = new User();
                 u.setUsername("testuser");
                 u.setEmail("testuser@example.com");
                 u.setPassword(passwordEncoder.encode("test123"));
-                u.setRole("USER"); // will become ROLE_USER by UserService
+                u.setRole("USER");
                 u.setCreatedAt(LocalDateTime.now());
-                System.out.println(">> Creating USER: testuser / test123");
                 userRepository.save(u);
+                System.out.println(">> Added USER: testuser / test123");
             }
 
             if (userRepository.findByUsername("admin").isEmpty()) {
@@ -44,10 +46,42 @@ public class LibraryManagerApplication {
                 a.setUsername("admin");
                 a.setEmail("admin@example.com");
                 a.setPassword(passwordEncoder.encode("admin123"));
-                a.setRole("ADMIN"); // will become ROLE_ADMIN by UserService
+                a.setRole("ADMIN");
                 a.setCreatedAt(LocalDateTime.now());
-                System.out.println(">> Creating ADMIN: admin / admin123");
                 userRepository.save(a);
+                System.out.println(">> Added ADMIN: admin / admin123");
+            }
+        };
+    }
+
+    // Insert sample books only if no books exist
+    @Bean
+    public CommandLineRunner initBooks(BookRepository bookRepository) {
+        return args -> {
+            if (bookRepository.count() == 0) {
+                System.out.println(">> Adding sample books...");
+
+                bookRepository.save(new Book(
+                        "The Great Gatsby", "F. Scott Fitzgerald",
+                        "9780743273565", false, null
+                ));
+                bookRepository.save(new Book(
+                        "1984", "George Orwell",
+                        "9780451524935", false, null
+                ));
+                bookRepository.save(new Book(
+                        "Atomic Habits", "James Clear",
+                        "9780735211292", false, null
+                ));
+                bookRepository.save(new Book(
+                        "Clean Code", "Robert C. Martin",
+                        "9780132350884", true, null
+                ));
+                bookRepository.save(new Book(
+                        "Java: The Complete Reference",
+                        "Herbert Schildt",
+                        "9781260440232", true, null
+                ));
             }
         };
     }
