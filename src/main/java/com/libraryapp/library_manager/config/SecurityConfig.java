@@ -1,6 +1,5 @@
 package com.libraryapp.library_manager.config;
 
-import com.libraryapp.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,12 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserService userService;
-
-    // Use your UserService (implements UserDetailsService)
-    public SecurityConfig(UserService userService) {
-        this.userService = userService;
-    }
+    // No UserService here anymore — this breaks the cycle
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,7 +30,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .userDetailsService(userService)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/login", "/register",
@@ -48,7 +41,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/catalog", true)  // 🔹 after login go to catalog
+                        .defaultSuccessUrl("/catalog", true)   // after login go to catalog
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -57,7 +50,7 @@ public class SecurityConfig {
                         .permitAll()
                 );
 
-        // allow H2 console frames
+        // For H2 console frames
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();
