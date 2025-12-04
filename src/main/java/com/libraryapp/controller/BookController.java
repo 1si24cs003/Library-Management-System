@@ -90,6 +90,13 @@ public class BookController {
         }
     }
 
+    // 🔹 Admin: mark physical book as returned (make available again)
+    @GetMapping("/admin/return/{id}")
+    public String returnBook(@PathVariable("id") Long id) {
+        loanService.returnPhysicalBookByBookId(id);
+        return "redirect:/catalog";
+    }
+
     // Read / view an ebook file in browser
     @GetMapping("/read/{fileName}")
     public ResponseEntity<Resource> readEbook(@PathVariable("fileName") String fileName)

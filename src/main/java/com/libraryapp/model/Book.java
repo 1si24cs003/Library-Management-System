@@ -29,6 +29,9 @@ public class Book {
     @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "available", nullable = false)
+    private boolean available = true;   // 🔹 NEW: availability for physical books
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -42,6 +45,7 @@ public class Book {
         this.isbn = isbn;
         this.ebook = ebook;
         this.filePath = filePath;
+        this.available = true;               // new books are available by default
         this.createdAt = LocalDateTime.now();
     }
 
@@ -49,6 +53,10 @@ public class Book {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        // if not explicitly set, new books are available
+        if (!this.ebook && !this.available) {
+            this.available = true;
+        }
     }
 
     // -------- Getters & Setters --------
@@ -99,6 +107,14 @@ public class Book {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public LocalDateTime getCreatedAt() {

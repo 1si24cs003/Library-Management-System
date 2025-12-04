@@ -15,7 +15,8 @@ public class UserController {
     private final LoanService loanService;
     private final UserRepository userRepository;
 
-    public UserController(LoanService loanService, UserRepository userRepository) {
+    public UserController(LoanService loanService,
+                          UserRepository userRepository) {
         this.loanService = loanService;
         this.userRepository = userRepository;
     }
@@ -32,7 +33,7 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
         model.addAttribute("loanHistory", loanService.getHistoryByUser(user.getId()));
-        return "history"; // -> templates/history.html
+        return "history"; // templates/history.html
     }
 
     // Current borrowed physical books page: /mybooks -> mybooks.html
@@ -47,6 +48,6 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
         model.addAttribute("loans", loanService.getCurrentPhysicalLoansByUser(user.getId()));
-        return "mybooks"; // -> templates/mybooks.html
+        return "mybooks"; // templates/mybooks.html
     }
 }

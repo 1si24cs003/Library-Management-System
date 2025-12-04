@@ -77,7 +77,7 @@
         <h1 class="page-title mb-0">Library Catalog</h1>
 
         <div class="d-flex gap-2">
-            <!-- Admin-only link (security will hide by access, not by UI) -->
+            <!-- Admin-only link (security will block non-admin users) -->
             <a class="btn btn-primary btn-sm" th:href="@{/admin/showNewBookForm}">
                 + Add New Book (Admin)
             </a>
@@ -120,6 +120,7 @@
                             </span>
                         </td>
                         <td class="text-center">
+
                             <!-- If ebook: show Read/View -->
                             <a th:if="${book.ebook}"
                                th:href="@{/read/{fileName}(fileName=${book.filePath})}"
@@ -128,12 +129,28 @@
                                 Read / View
                             </a>
 
-                            <!-- If physical: show Borrow button -->
-                            <a th:unless="${book.ebook}"
-                               th:href="@{/borrow/{id}(id=${book.id})}"
-                               class="btn btn-sm btn-success">
-                                Borrow
-                            </a>
+                            <!-- If physical: show availability / borrow / admin return -->
+                            <div th:unless="${book.ebook}">
+                                <!-- Available: allow borrowing -->
+                                <a th:if="${book.available}"
+                                   th:href="@{/borrow/{id}(id=${book.id})}"
+                                   class="btn btn-sm btn-success">
+                                    Borrow
+                                </a>
+
+                                <!-- Not available: show status + admin return option -->
+                                <div th:unless="${book.available}">
+                                    <span class="text-danger small d-block mb-1">
+                                        Currently borrowed / Not available
+                                    </span>
+                                    <!-- Admin-only endpoint (secured on backend) -->
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       th:href="@{/admin/return/{id}(id=${book.id})}">
+                                        Mark as Returned (Admin)
+                                    </a>
+                                </div>
+                            </div>
+
                         </td>
                     </tr>
                     </tbody>
