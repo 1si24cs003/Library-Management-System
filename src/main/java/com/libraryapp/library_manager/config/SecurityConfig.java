@@ -1,12 +1,12 @@
-package com.libraryapp.config;  // <-- keep or adjust package as you already have
+package com.libraryapp.library_manager.config;
 
+import com.libraryapp.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,27 +15,40 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 1) Password encoder bean (THIS FIXES YOUR ERROR)
+    private final UserService userService;
+
+    // Use your UserService (implements UserDetailsService)
+    public SecurityConfig(UserService userService) {
+        this.userService = userService;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 2) Security filter chain – adjust as you already had
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .userDetailsService(userService)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/register", "/login").permitAll()
-                        .requestMatchers("/", "/books", "/books/search", "/books/download/**").permitAll()
+                        .requestMatchers(
+                                "/", "/login", "/register",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**",
+                                "/h2-console/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/books", true)
+                        .defaultSuccessUrl("/catalog", true)  // 🔹 after login go to catalog
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -44,12 +57,9 @@ public class SecurityConfig {
                         .permitAll()
                 );
 
-        return http.build();
-    }
+        // allow H2 console frames
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
-    // 3) AuthenticationManager bean (sometimes useful)
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+        return http.build();
     }
 }

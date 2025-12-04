@@ -20,7 +20,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // OLD /history can stay if you want full log
+    // Full history page: /history -> history.html
     @GetMapping("/history")
     public String viewHistory(Model model, Principal principal) {
         if (principal == null) {
@@ -32,10 +32,10 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
         model.addAttribute("loanHistory", loanService.getHistoryByUser(user.getId()));
-        return "history";
+        return "history"; // -> templates/history.html
     }
 
-    // NEW: show only current borrowed physical books
+    // Current borrowed physical books page: /mybooks -> mybooks.html
     @GetMapping("/mybooks")
     public String viewMyBorrowedBooks(Model model, Principal principal) {
         if (principal == null) {
@@ -47,6 +47,6 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
         model.addAttribute("loans", loanService.getCurrentPhysicalLoansByUser(user.getId()));
-        return "mybooks"; // mybooks.html
+        return "mybooks"; // -> templates/mybooks.html
     }
 }
