@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Library Catalog</title>
+</head>
+<body>
+    <h1>Library Catalog</h1>
+
+    <p>
+        <a href="/admin/showNewBookForm">Add New Book (Admin)</a> |
+        <a href="/mybooks">My Borrowed Books</a> |
+        <a href="/history">View History</a>
+    </p>
+
+    <hr/>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="book : ${listBooks}">
+                <td th:text="${book.title}"></td>
+                <td th:text="${book.author}"></td>
+                <td th:text="${book.isbn}"></td>
+                <td th:text="${book.ebook} ? 'E-book' : 'Physical'"></td>
+                <td>
+                    <!-- If ebook: show Read/View -->
+                    <span th:if="${book.ebook}">
+                        <a th:href="@{/read/{fileName}(fileName=${book.filePath})}" target="_blank">
+                            Read / View
+                        </a>
+                    </span>
+
+                    <!-- If physical: show Borrow button -->
+                    <span th:unless="${book.ebook}">
+                        <a th:href="@{/borrow/{id}(id=${book.id})}">
+                            Borrow
+                        </a>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br/>
+    <a th:href="@{/logout}">Logout</a>
+</body>
+</html>

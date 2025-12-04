@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Borrowed Books</title>
+</head>
+<body>
+    <h1>My Borrowed Books</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Loan Type</th>
+                <th>Date Borrowed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="loan : ${loans}">
+                <td th:text="${loan.book.title}"></td>
+                <td th:text="${loan.loanType}"></td>
+                <td th:text="${#temporals.format(loan.loanDate, 'dd-MM-yyyy HH:mm')}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br/>
+    <a href="/catalog">Back to Catalog</a> |
+    <a th:href="@{/logout}">Logout</a>
+</body>
+</html>

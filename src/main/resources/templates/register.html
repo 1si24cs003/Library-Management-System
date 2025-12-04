@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Create Account | Library Manager</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+        th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2f7;
+            font-family: "Segoe UI", system-ui, sans-serif;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 440px;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #22c55e, #4f46e5);
+            color: #fff;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .register-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .register-body {
+            padding: 1.75rem 1.75rem 1.25rem;
+        }
+
+        .btn-success-custom {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .btn-success-custom:hover {
+            background-color: #16a34a;
+            border-color: #16a34a;
+        }
+
+        .footer-link {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .footer-link a {
+            text-decoration: none;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="register-card">
+    <div class="register-header">
+        <h2>Create Your Library Account</h2>
+    </div>
+
+    <div class="register-body">
+
+        <!-- Success message after registration -->
+        <div th:if="${param.success}" class="alert alert-success py-2 mb-3">
+            Registration successful! You can now log in.
+        </div>
+
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <div class="mb-3">
+                <label class="form-label" for="reg-username">Username</label>
+                <input type="text" id="reg-username" th:field="*{username}" class="form-control" placeholder="Enter a username" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="reg-email">Email</label>
+                <input type="email" id="reg-email" th:field="*{email}" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="reg-password">Password</label>
+                <input type="password" id="reg-password" th:field="*{password}" class="form-control" placeholder="Choose a password" required>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success-custom">Create Account</button>
+            </div>
+        </form>
+
+        <div class="footer-link">
+            Already have an account?
+            <a th:href="@{/login}">Login here</a>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS (optional future use) -->
+<script
+    th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js}"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+</html>
